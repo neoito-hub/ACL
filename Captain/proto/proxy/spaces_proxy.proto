@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "github.com/neoito-hub/ACL-Block/captain";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+
+package spaces_proxy;
+
+message SpacesRequest {
+  string body=1;
+  map<string ,string> queryparams=2;
+
+}
+
+message SpacesReply {
+  bool err=1 ;
+  string msg=2; 
+  string data=3; 
+  int32 status=4; 
+
+}
+
+service SpacesProxy {
+  rpc SpacesCallService (SpacesRequest) returns (SpacesReply) {
+  }
+}
