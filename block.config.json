@@ -3,8 +3,8 @@
   "type": "raw-package",
   "blockId": "hpYBxxL_JGtWLOlbV0ThV",
   "source": {
-    "https": "",
-    "ssh": "",
+    "https": "https://github.com/neoito-hub/ACL.git",
+    "ssh": "git@github.com:neoito-hub/ACL.git",
     "branch": "block_ACL"
   },
   "parentBlockIDs": [],
