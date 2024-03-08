@@ -1,0 +1,12 @@
+{
+  "name": "container",
+  "type": "ui-container",
+  "source": {
+    "https": "https://github.com/appblocks-hub/_spaces_container.git",
+    "ssh": "git@github.com:appblocks-hub/_spaces_container.git"
+  },
+  "language": "nodejs",
+  "start": "npx webpack-dev-server",
+  "build": "npx webpack",
+  "postPull": "npm i"
+}

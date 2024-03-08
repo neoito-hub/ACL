@@ -1,0 +1,7 @@
+[[services]]
+name = "app_registry"
+route="/api/app-registry/"
+
+[[services]]
+name = "blox_registry"
+route="/api/registry/"

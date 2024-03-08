@@ -1,0 +1,17 @@
+{
+  "name": "ACL",
+  "type": "raw-package",
+  "blockId": "hpYBxxL_JGtWLOlbV0ThV",
+  "source": {
+    "https": "https://github.com/neoito-hub/ACL.git",
+    "ssh": "git@github.com:neoito-hub/ACL.git",
+    "branch": "block_ACL"
+  },
+  "parentBlockIDs": [],
+  "isPublic": true,
+  "supportedAppblockVersions": [
+    "1.0.0"
+  ],
+  "repoType": "mono",
+  "language": "golang"
+}
