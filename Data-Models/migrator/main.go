@@ -305,11 +305,11 @@ func Migrate(db *gorm.DB) {
 	INSERT INTO public.shield_apps(
 		app_id, client_id, client_secret, app_name, app_sname, description, app_url, redirect_url, app_type, created_at, updated_at, deleted_at, owner_space_id, id)
 		
-	VALUES (nanoid(), '%s', 'your_client_secret', 'test-app', 'test-app', 'Test App', 'http://localhost:3011', '{http://localhost:3011}', 2, now(), null, null, null, null)
+	VALUES (nanoid(),?, 'your_client_secret', 'test-app', 'test-app', 'Test App', 'http://localhost:3011', '{http://localhost:3011}', 2, now(), null, null, null, null)
 	ON CONFLICT DO NOTHING;
-    `, clientID)
+    `)
 
-	newApp := db.Exec(shieldAppQuery)
+	newApp := db.Exec(shieldAppQuery, clientID)
 	if newApp.Error != nil {
 		log.Fatal("Error")
 	}
@@ -319,14 +319,14 @@ func Migrate(db *gorm.DB) {
         WITH shield_app AS (
             SELECT app_id
             FROM shield_apps 
-            WHERE client_id = '%s'
+            WHERE client_id =?
         )
         INSERT INTO public.shield_app_domain_mappings (
             id,owner_app_id,url
         ) VALUES
-			(nanoid(),(SELECT app_id FROM shield_app),'http://localhost:3011')ON CONFLICT DO NOTHING;`, clientID)
+			(nanoid(),(SELECT app_id FROM shield_app),'http://localhost:3011')ON CONFLICT DO NOTHING;`)
 
-	shieldDomainMappings := db.Exec(shieldDomainMappingsQuery)
+	shieldDomainMappings := db.Exec(shieldDomainMappingsQuery, clientID)
 	if shieldDomainMappings.Error != nil {
 		log.Fatal("Error")
 	}
@@ -336,8 +336,8 @@ func Migrate(db *gorm.DB) {
 		INSERT INTO public.app_permissions(
 			app_id, permission_id, mandatory, created_at, updated_at)
 		select a.app_id,p.permission_id,p.mandatory,now(),null from shield_apps a inner join permissions p on true 
-		where a.client_id='test-app-1' on conflict do nothing;
-		`)
+		where a.client_id in (?) on conflict do nothing;
+		`, clientID)
 
 	if newAppPermissionErr.Error != nil {
 		log.Fatal("Error")
@@ -368,7 +368,7 @@ func Migrate(db *gorm.DB) {
 	    WITH shield_app AS (
 	        SELECT app_id
 	        FROM shield_apps
-	        WHERE client_id = '%s'
+	        WHERE client_id =?
 	    )
 	    INSERT INTO public.ac_resources (
 	        id, created_at, updated_at, deleted_at,
@@ -455,9 +455,9 @@ func Migrate(db *gorm.DB) {
 			('QNXip-DHCwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for create-entity', NULL, '/api/spaces/v0.1/create-entity/invoke', 'create-entity', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
 			('QNXibdtb-DHCwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for user-add-entities', NULL, '/api/spaces/v0.1/user-add-entities/invoke', 'user-add-entities', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
 			('QNXibdtb-DygdwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for entity name check', NULL, '/api/spaces/v0.1/check-entity-name/invoke', 'check-entity-name', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2)
-	        ON CONFLICT DO NOTHING;`, clientID)
+	        ON CONFLICT DO NOTHING;`)
 
-	acRes := db.Exec(acResQuery)
+	acRes := db.Exec(acResQuery, clientID)
 	if acRes.Error != nil {
 		log.Fatal("Error")
 	}
@@ -484,7 +484,9 @@ func Migrate(db *gorm.DB) {
 		,'roles-delete-existing-pol-grp-subs','roles-list-app-entities','roles-add-app-entities','roles-list-entities','roles-add-block-entities','roles-create-invite-link','roles-send-user-invite-email',
 		'teams-list-users','teams-create-invite-link','teams-search-user','teams-send-user-invite-email','teams-list-existing-pol-grp-subs','teams-list-to-add-pol-grp-subs','teams-add-pol-grp-subs',
 		'teams-delete-existing-pol-grp-subs','teams-list-app-entities','user-add-permissions','user-add-entities',
-		'teams-add-app-entities','teams-list-entities','teams-add-block-entities','create-role','create-team','get-user-by-id','update-user','list-spaces-detailed','roles-delete-user','cancel_invite','list-entity-definition','user-list-available-entities','teams-list-available-permissions','teams-add-permissions','teams-list-permissions','roles-list-available-permissions','roles-add-permissions','roles-list-permissions') on conflict do nothing;`)
+		'teams-add-app-entities','teams-list-entities','teams-add-block-entities','create-role','create-team','get-user-by-id','update-user','list-spaces-detailed','roles-delete-user','cancel_invite','list-entity-definition','user-list-available-entities','teams-list-available-permissions','teams-add-permissions','teams-list-permissions','roles-list-available-permissions','roles-add-permissions','roles-list-permissions') and ac_res.owner_app_id in (SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?) on conflict do nothing;`, clientID)
 
 	if acResGrpRes.Error != nil {
 		log.Fatal("Error")
@@ -518,7 +520,9 @@ func Migrate(db *gorm.DB) {
 		select 'EPATshPgmCI2PZC9Oec9_',now(),now(),null,actgrp.id,ac_act.id,null from ac_act_grps actgrp
 		left join ac_actions ac_act on true
 		where actgrp.name in ('ACL Access Permission')
-	    and ac_act.description in ('predefined invoke action for resource') on conflict do nothing;`)
+	    and ac_act.description in ('predefined invoke action for resource') and ac_act.owner_app_id in (SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?) on conflict do nothing;`, clientID)
 
 	if actGrpAct.Error != nil {
 		log.Fatal("Error")
@@ -577,4 +581,301 @@ func Migrate(db *gorm.DB) {
 		log.Fatal("Error")
 	}
 
+	// Registering a sample todo app and adding resources and creating permissions for granting resources
+
+	todoAppClientID := os.Getenv("TODO_APP_CLIENT_ID")
+
+	//seeding default app for which app needs to be managed using shield (use the same client_id in the login request)
+	todoAppRegisterQuery := fmt.Sprintf(`
+	INSERT INTO public.shield_apps(
+		app_id, client_id, client_secret, app_name, app_sname, description, app_url, redirect_url, app_type, created_at, updated_at, deleted_at, owner_space_id, id)
+		
+	VALUES (nanoid(),?, '^\uM8a+£hUgCj=N_krV>0?:qI[K0p-qCl-1Upe', 'todo-app', 'todo-app', 'Test App', 'http://localhost:3001', '{http://localhost:3001}', 2, now(), null, null, null, null)
+	ON CONFLICT DO NOTHING;
+    `)
+
+	todoApp := db.Exec(todoAppRegisterQuery, todoAppClientID)
+	if todoApp.Error != nil {
+		log.Fatal("Error")
+	}
+
+	// Query to seed  domain url mapping with shield app . Change the url according to your preferences
+	todoAppDomainMapingQuery := fmt.Sprintf(`
+        WITH shield_app AS (
+            SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?
+        )
+        INSERT INTO public.shield_app_domain_mappings (
+            id,owner_app_id,url
+        ) VALUES
+			(nanoid(),(SELECT app_id FROM shield_app),'http://localhost:3001')ON CONFLICT DO NOTHING;`)
+
+	todoAppDomainMappings := db.Exec(todoAppDomainMapingQuery, todoAppClientID)
+	if todoAppDomainMappings.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding permission for  shield app
+	todoAppPermissionErr := db.Exec(`
+		INSERT INTO public.app_permissions(
+			app_id, permission_id, mandatory, created_at, updated_at)
+		select a.app_id,p.permission_id,p.mandatory,now(),null from shield_apps a inner join permissions p on true 
+		where a.client_id in (?) on conflict do nothing;
+		`, todoAppClientID)
+
+	if todoAppPermissionErr.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//initial entity defenition seeding
+
+	// Query to seed resources
+	todoAcResQuery := fmt.Sprintf(`
+	    WITH shield_app AS (
+	        SELECT app_id
+	        FROM shield_apps
+	        WHERE client_id =?
+	    )
+	    INSERT INTO public.ac_resources (
+	        id, created_at, updated_at, deleted_at,
+	        name, description, path, function_name,
+	        entity_name, function_method, version, opt_counter,
+	        owner_app_id, is_authorised, is_authenticated
+	    ) VALUES
+			('6qpQOAUO5I8rIf8_0N83vONLsRVUsoJ-', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'addToDo', NULL, '/api/todo/v0.1/addToDo/invoke', 'addToDo', 'todo', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) ,('2jKGc8nZdRagQTnRdM1tVsujjL6j6DTz', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'listToDo', NULL, '/api/todo/v0.1/listToDo/invoke', 'listToDo', 'todo', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) ,('Vl1F8lTUQ7bOHsoY9flFpds6hLjdU7HO', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'removeToDo', NULL, '/api/todo/v0.1/removeToDo/invoke', 'removeToDo', 'todo', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) 
+			
+	        ON CONFLICT DO NOTHING;`)
+
+	todoRes := db.Exec(todoAcResQuery, todoAppClientID)
+	if todoRes.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding ac_res_grps  - we are grouping our resources using secondary table called ac_res_grps
+	todoResGrps := db.Exec(`INSERT INTO public.ac_res_grps(
+	id, created_at, updated_at, deleted_at, owner_space_id, name, description, is_predefined, opt_counter, type)
+	VALUES ('SHBhPKd1i2-mWX_o9B4udR9pS0VGL8i0',now(),now(),null,null,'ToDo List Access','Resource group for ToDo List', true,null,1),
+	('D0oF6BQWomjDdJ9Bnix9WlHcIWxPjxbt',now(),now(),null,null,'ToDo Delete Access','Resource group for ToDo Delete', true,null,1),
+	('NU3zbCdcascxTfa2N1mZCUTj18M_R3k0',now(),now(),null,null,'ToDo Create Access','Resource group for ToDo Create', true,null,1) on conflict do nothing;`)
+
+	if todoResGrps.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding ac_res_gp_res - we have a bridge table for ac_resources and ac_res_grps
+	todoListResGpRes := db.Exec(`INSERT INTO public.ac_res_gp_res(
+		id, created_at, updated_at, deleted_at, ac_res_grp_id, ac_resource_id, opt_counter)
+		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
+		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
+		where ac_res_grp.name in ('ToDo List Access') and
+		ac_res.function_name in ('listToDo') and ac_res.owner_app_id in (SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+
+	if todoListResGpRes.Error != nil {
+		log.Fatal("Error")
+	}
+
+	todoCreateResGpRes := db.Exec(`INSERT INTO public.ac_res_gp_res(
+		id, created_at, updated_at, deleted_at, ac_res_grp_id, ac_resource_id, opt_counter)
+		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
+		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
+		where ac_res_grp.name in ('ToDo Create Access') and
+		ac_res.function_name in ('addToDo') and ac_res.owner_app_id in (SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+
+	if todoCreateResGpRes.Error != nil {
+		log.Fatal("Error")
+	}
+
+	todoDeleteResGpRes := db.Exec(`INSERT INTO public.ac_res_gp_res(
+		id, created_at, updated_at, deleted_at, ac_res_grp_id, ac_resource_id, opt_counter)
+		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
+		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
+		where ac_res_grp.name in ('ToDo Delete Access') and
+		ac_res.function_name in ('removeToDo') and ac_res.owner_app_id in (SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+
+	if todoDeleteResGpRes.Error != nil {
+		log.Fatal("Error")
+	}
+	//seeding actions table its basically api action methods
+	toDoAct := db.Exec(`
+	WITH shield_app AS (
+		SELECT app_id
+		FROM shield_apps
+		WHERE client_id = ?
+	)
+	INSERT INTO public.ac_actions(
+			id, created_at, updated_at, deleted_at,  name, description,opt_counter,owner_app_id)
+			VALUES ('cssMjXvSm-sbLG1FZgH4UKU3iDQvp8rK',now(),now(),null,'invoke','predefined invoke action for resource',null,(SELECT app_id FROM shield_app)) on conflict do nothing;`, todoAppClientID)
+
+	if toDoAct.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding ac_act_grps  secondary table
+	todoActGrp := db.Exec(`INSERT INTO public.ac_act_grps(
+	   id, created_at, updated_at, deleted_at, owner_space_id, description, name, is_predefined, opt_counter, type)
+	   VALUES ('BZw8nyBZVhZdbwkF_izE6QMq9b5pEvXD',now(),now(),null,null,'Action group for ToDo','ToDo Action Group',true,null,1)on conflict do nothing;`)
+
+	if todoActGrp.Error != nil {
+		log.Fatal("Error")
+	}
+	//seeding act_gp_actions and ac_actions bridge table
+	todoActGrpAct := db.Exec(`INSERT INTO public.act_gp_actions(
+		id, created_at, updated_at, deleted_at, ac_act_grp_id, ac_action_id, opt_counter)
+		select 'BEWYfrJtDctmQq-Nc-1k5UrvnB3UF1sG',now(),now(),null,actgrp.id,ac_act.id,null from ac_act_grps actgrp
+		left join ac_actions ac_act on true
+		where actgrp.name in ('ToDo Action Group')
+	    and ac_act.description in ('predefined invoke action for resource') and ac_act.owner_app_id in (SELECT app_id
+            FROM shield_apps 
+            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+
+	if todoActGrpAct.Error != nil {
+		log.Fatal("Error")
+	}
+
+	// seeding ac_policies - we are grouping multiple resources to policy
+	toDoListPol := db.Exec(`INSERT INTO public.ac_policies(
+		id, created_at, updated_at, deleted_at, ac_act_grp_id, ac_res_grp_id, owner_space_id, created_by, updated_by, name, description, path, opt_counter, is_predefined, type)
+	    select 'AfBUi3x9kEcVR2NqJoPg7eEgPOgQnNUr',now(),now(),null,actgrp.id,acresgrp.id,null,null,null,'ToDo List','Ac Policy for ToDo List',null,null,true,1
+	    from ac_act_grps actgrp left join ac_res_grps acresgrp on true
+	    where actgrp.name in ('ToDo Action Group') and acresgrp.name in ('ToDo List Access') on conflict do nothing;`)
+
+	if toDoListPol.Error != nil {
+		log.Fatal("Error")
+	}
+
+	toDoCreatePol := db.Exec(`INSERT INTO public.ac_policies(
+		id, created_at, updated_at, deleted_at, ac_act_grp_id, ac_res_grp_id, owner_space_id, created_by, updated_by, name, description, path, opt_counter, is_predefined, type)
+	    select '6YoEF0QogY4n4_4CBEHoyADibdHKRx7Z',now(),now(),null,actgrp.id,acresgrp.id,null,null,null,'ToDo Create','Ac Policy for ToDo Create',null,null,true,1
+	    from ac_act_grps actgrp left join ac_res_grps acresgrp on true
+	    where actgrp.name in ('ToDo Action Group') and acresgrp.name in ('ToDo Create Access') on conflict do nothing;`)
+
+	if toDoCreatePol.Error != nil {
+		log.Fatal("Error")
+	}
+
+	todoRemovePol := db.Exec(`INSERT INTO public.ac_policies(
+		id, created_at, updated_at, deleted_at, ac_act_grp_id, ac_res_grp_id, owner_space_id, created_by, updated_by, name, description, path, opt_counter, is_predefined, type)
+	    select 'VgdtYWT6lMD1UMcrTMRdWYbskU2rmJKo',now(),now(),null,actgrp.id,acresgrp.id,null,null,null,'ToDo Delete','Ac Policy for ToDo Delete',null,null,true,1
+	    from ac_act_grps actgrp left join ac_res_grps acresgrp on true
+	    where actgrp.name in ('ToDo Action Group') and acresgrp.name in ('ToDo Delete Access') on conflict do nothing;`)
+
+	if todoRemovePol.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding ac_pol_grps  table - secondary table for ac_policies
+	todoListPolGrp := db.Exec(`INSERT INTO public.ac_pol_grps(
+		id, created_at, updated_at, deleted_at, owner_space_id, description, name, opt_counter, is_predefined, type, entity_type, display_name, entity_types)
+	    select '_w9SN6jrC2NNZx7xjNwRo2V5VoeRNHIk',now(),now(),null,null,'Ac Policy Group for ToDo List Access','ToDo List Access',null,true,1,null,'ToDo List Access','{1,2,3}' on conflict do nothing;`)
+
+	if todoListPolGrp.Error != nil {
+		log.Fatal("Error")
+	}
+
+	todoCreatePolGrp := db.Exec(`INSERT INTO public.ac_pol_grps(
+		id, created_at, updated_at, deleted_at, owner_space_id, description, name, opt_counter, is_predefined, type, entity_type, display_name, entity_types)
+	    select 'NIH-2a-xN-DdrR3UoynoofGoGb9jlOhQ',now(),now(),null,null,'Ac Policy Group for ToDo Create Access','ToDo Create Access',null,true,1,null,'ToDo Create Access','{1,2,3}' on conflict do nothing;`)
+
+	if todoCreatePolGrp.Error != nil {
+		log.Fatal("Error")
+	}
+
+	todoRemovePolGrp := db.Exec(`INSERT INTO public.ac_pol_grps(
+		id, created_at, updated_at, deleted_at, owner_space_id, description, name, opt_counter, is_predefined, type, entity_type, display_name, entity_types)
+	    select 'aIh9GZrLeIp8VtlWBXv9GZt-rJlOw9hS',now(),now(),null,null,'Ac Policy Group for ToDo Delete Access','ToDo Delete Access',null,true,1,null,'ToDo Delete Access','{1,2,3}' on conflict do nothing;`)
+
+	if todoRemovePolGrp.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding pol_gp_policies - ac_pol_grps and ac_policies bridge table
+	listPolGrpPol := db.Exec(`INSERT INTO public.pol_gp_policies(
+		id, created_at, updated_at, deleted_at, ac_policy_id, ac_pol_grp_id, opt_counter)
+		select 'zJq6MM5lGlKiD9CurdO1rm7HJ1o25qrE',now(),now(),null,acpol.id,acpolgrp.id,null
+		from ac_policies acpol left join ac_pol_grps acpolgrp on true
+		where acpol.name in ('ToDo List') and acpolgrp.name in ('ToDo List Access') on conflict do nothing;`)
+
+	if listPolGrpPol.Error != nil {
+		log.Fatal("Error")
+	}
+
+	createPolGrpPol := db.Exec(`INSERT INTO public.pol_gp_policies(
+		id, created_at, updated_at, deleted_at, ac_policy_id, ac_pol_grp_id, opt_counter)
+		select 'iR7VMVc_gpaG2KnTP687qKrXWLLJKsrf',now(),now(),null,acpol.id,acpolgrp.id,null
+		from ac_policies acpol left join ac_pol_grps acpolgrp on true
+		where acpol.name in ('ToDo Create') and acpolgrp.name in ('ToDo Create Access') on conflict do nothing;`)
+
+	if createPolGrpPol.Error != nil {
+		log.Fatal("Error")
+	}
+
+	deletePolGrpPol := db.Exec(`INSERT INTO public.pol_gp_policies(
+		id, created_at, updated_at, deleted_at, ac_policy_id, ac_pol_grp_id, opt_counter)
+		select 'ktKzjpdFlmXm4Rxz45jP78VtluzhWQ2F',now(),now(),null,acpol.id,acpolgrp.id,null
+		from ac_policies acpol left join ac_pol_grps acpolgrp on true
+		where acpol.name in ('ToDo Delete') and acpolgrp.name in ('ToDo Delete Access') on conflict do nothing;`)
+
+	if deletePolGrpPol.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding permissions table - permissions basically API usage access
+	listPer := db.Exec(`INSERT INTO public.ac_permissions(
+		id, created_at, updated_at, deleted_at, description, name, opt_counter, is_predefined, type, display_name)
+	    select '2MCxOl_RljjXhyc6hlWWhGdn5bmrCkpK',now(),now(),null,'Ac Permission for ToDo List And Create','ToDo List And Create Permission',null,true,1,'ToDo List And Create Permission'
+	    on conflict do nothing;`)
+
+	if listPer.Error != nil {
+		log.Fatal("Error")
+	}
+
+	deletePer := db.Exec(`INSERT INTO public.ac_permissions(
+		id, created_at, updated_at, deleted_at, description, name, opt_counter, is_predefined, type, display_name)
+	    select 'SiQJGFqz1u6ZEQSKX8sR2wuJ1cxZNDX7',now(),now(),null,'Ac Permission for ToDo Delete Permission','ToDo Delete Permission',null,true,1,'ToDo Delete Permission'
+	    on conflict do nothing;`)
+
+	if deletePer.Error != nil {
+		log.Fatal("Error")
+	}
+
+	listPerPolGrp := db.Exec(`INSERT INTO public.per_pol_grps(
+	    id, created_at, updated_at, deleted_at, ac_permission_id, ac_pol_grp_id)
+	    select 'Wihu1Ff2GxC7C_B6WEYKbVdqZaVjCwK',now(),now(),null,acper.id,acpolgrp.id from ac_permissions acper
+	    left join ac_pol_grps acpolgrp on true
+	    where acper.name in ('ToDo List And Create Permission') and acpolgrp.name in ('ToDo Create Access','ToDo List Access')
+		on conflict do nothing;`)
+
+	if listPerPolGrp.Error != nil {
+		log.Fatal("Error")
+	}
+
+	createPerPolGrp := db.Exec(`INSERT INTO public.per_pol_grps(
+	    id, created_at, updated_at, deleted_at, ac_permission_id, ac_pol_grp_id)
+	    select 'H45k5fyzdj3I2Kab4_Rn64na_0-WqvUF',now(),now(),null,acper.id,acpolgrp.id from ac_permissions acper
+	    left join ac_pol_grps acpolgrp on true
+	    where acper.name in ('ToDo List And Create Permission') and acpolgrp.name in ('ToDo Create Access')
+		on conflict do nothing;`)
+
+	if createPerPolGrp.Error != nil {
+		log.Fatal("Error")
+	}
+
+	//seeding per_pol_grps - ac_permissions and  policies connection table
+	deletePerPolGrp := db.Exec(`INSERT INTO public.per_pol_grps(
+	    id, created_at, updated_at, deleted_at, ac_permission_id, ac_pol_grp_id)
+	    select 'U445o3QnvrzBE2PohtajqDp3hA_PSvcg',now(),now(),null,acper.id,acpolgrp.id from ac_permissions acper
+	    left join ac_pol_grps acpolgrp on true
+	    where acper.name in ('ToDo Delete Permission') and acpolgrp.name in ('ToDo Delete Access')
+		on conflict do nothing;`)
+
+	if deletePerPolGrp.Error != nil {
+		log.Fatal("Error")
+	}
 }
