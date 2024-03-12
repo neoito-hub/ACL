@@ -79,7 +79,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload string) {
 
 func respondWithRedirect(w http.ResponseWriter, code int, payload string, r *http.Request) {
 	type RedirectResponse struct {
-		RedirectUrl string `json:"redirect_url"`
+		RedirectUrl string `json:"rediDatarect_url"`
 	}
 
 	var payloadObj RedirectResponse

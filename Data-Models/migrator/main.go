@@ -365,99 +365,94 @@ func Migrate(db *gorm.DB) {
 
 	// Query to seed resources
 	acResQuery := fmt.Sprintf(`
-	    WITH shield_app AS (
-	        SELECT app_id
-	        FROM shield_apps
-	        WHERE client_id =?
-	    )
+	   
 	    INSERT INTO public.ac_resources (
 	        id, created_at, updated_at, deleted_at,
 	        name, description, path, function_name,
 	        entity_name, function_method, version, opt_counter,
-	        owner_app_id, is_authorised, is_authenticated
+	         is_authorised, is_authenticated
 	    ) VALUES
-			('550e8400-e29b-41d4-a716-446655440000', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'teams-add-permissions', NULL, '/api/spaces/v0.1/teams-add-permissions/invoke', 'list-licenses', 'spaces', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) ,
-			('fK8cav2w8b7mCyvoP3Bdr', '2024-01-18 06:22:38.981638+00', '2024-01-18 06:22:38.981638+00', NULL, 'Resource for list-spaces', NULL, '/api/spaces/v0.1/list-spaces/invoke', 'list-spaces', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('550e8400-e29b-4hgy4-a716-446655440000', '2024-01-18 10:16:19.421439+00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-			('550e84s00-e29b-4hgy4-a716-446655440000', '2024-01-18 10:35:49.613494+00', '2024-01-18 10:35:49.613494+00', NULL, 'create-invite_link', NULL, '/api/spaces/v0.1/create-invite-link/invoke', 'create-invite_link', 'spaces', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('cYFau9EH6ANQZC-LrvCHO', '2024-01-18 11:08:51.482964+00', '2024-01-18 11:08:51.482964+00', NULL, 'Resource for teams-list-to-add-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-list-to-add-pol-grp-subs/invoke', 'teams-list-to-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('FNTFcHkDGRYrU9-m_gkSA', '2024-01-18 11:08:51.490274+00', '2024-01-18 11:08:51.490274+00', NULL, 'Resource for user-list-available-entities', NULL, '/api/spaces/v0.1/user-list-available-entities/invoke', 'user-list-available-entities', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('jzAxzMT81Kv8aCZEcQgc8', '2024-01-18 11:08:51.491261+00', '2024-01-18 11:08:51.491261+00', NULL, 'Resource for check-role-name', NULL, '/api/spaces/v0.1/check-role-name/invoke', 'check-role-name', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('9LjrDvq1AFKTcv8hBbUGP', '2024-01-18 11:08:51.492943+00', '2024-01-18 11:08:51.492943+00', NULL, 'Resource for cancel-invite', NULL, '/api/spaces/v0.1/cancel-invite/invoke', 'cancel-invite', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('d-wOysylDamL7hIO0QrZC', '2024-01-18 11:08:51.496833+00', '2024-01-18 11:08:51.496833+00', NULL, 'Resource for roles-list-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-list-existing-pol-grp-subs/invoke', 'roles-list-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('h0Iy61Gqa8AOwq1gt2RUx', '2024-01-18 11:08:51.498867+00', '2024-01-18 11:08:51.498867+00', NULL, 'Resource for roles-delete-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-delete-existing-pol-grp-subs/invoke', 'roles-delete-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('84_Yq5VzvLiVEBmiCfsh2', '2024-01-18 11:08:51.501083+00', '2024-01-18 11:08:51.501083+00', NULL, 'Resource for teams-add-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-add-pol-grp-subs/invoke', 'teams-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('DA6eNzlrdKH5EqjpYjjga', '2024-01-18 11:08:51.504112+00', '2024-01-18 11:08:51.504112+00', NULL, 'Resource for teams-list-available-permissions', NULL, '/api/spaces/v0.1/teams-list-available-permissions/invoke', 'teams-list-available-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('N4sjxTnNf1hewEXqWXWJL', '2024-01-18 11:08:51.507645+00', '2024-01-18 11:08:51.507645+00', NULL, 'Resource for teams-add-permissions', NULL, '/api/spaces/v0.1/teams-add-permissions/invoke', 'teams-add-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('xWLAvUnRa6YsH9ueNnc9_', '2024-01-18 11:08:51.510679+00', '2024-01-18 11:08:51.510679+00', NULL, 'Resource for create-logo-signed-url', NULL, '/api/spaces/v0.1/create-logo-signed-url/invoke', 'create-logo-signed-url', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('KrzwOoRAQ-Gb0nV4v7X7R', '2024-01-18 11:08:51.515918+00', '2024-01-18 11:08:51.515918+00', NULL, 'Resource for roles-search-user', NULL, '/api/spaces/v0.1/roles-search-user/invoke', 'roles-search-user', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('QMo-wqpa6ptG9Uz-JphVt', '2024-01-18 11:08:51.517827+00', '2024-01-18 11:08:51.517827+00', NULL, 'Resource for list-spaces-detailed', NULL, '/api/spaces/v0.1/list-spaces-detailed/invoke', 'list-spaces-detailed', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('ybT6UL9cWQOvcUBfSIFRj', '2024-01-18 11:08:51.519145+00', '2024-01-18 11:08:51.519145+00', NULL, 'Resource for send-user-invite-email', NULL, '/api/spaces/v0.1/send-user-invite-email/invoke', 'send-user-invite-email', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('gmFwBdvYaUY_BvbHMNhyX', '2024-01-18 11:08:51.521206+00', '2024-01-18 11:08:51.521206+00', NULL, 'Resource for list-invited-users', NULL, '/api/spaces/v0.1/list-invited-users/invoke', 'list-invited-users', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('g5fh9UFlrq_1OP1IgZksH', '2024-01-18 11:08:51.525172+00', '2024-01-18 11:08:51.525172+00', NULL, 'Resource for user-list-permissions', NULL, '/api/spaces/v0.1/user-list-permissions/invoke', 'user-list-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('rKsvAsb9hAeN4vNoqdAnM', '2024-01-18 11:08:51.531688+00', '2024-01-18 11:08:51.531688+00', NULL, 'Resource for teams-list-permissions', NULL, '/api/spaces/v0.1/teams-list-permissions/invoke', 'teams-list-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('fQKcNySVMXeqbIFNx8oMW', '2024-01-18 11:08:51.532744+00', '2024-01-18 11:08:51.532744+00', NULL, 'Resource for list-users', NULL, '/api/spaces/v0.1/list-users/invoke', 'list-users', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('SjSs4Hvbya78GUJUTc3M0', '2024-01-18 11:08:51.534711+00', '2024-01-18 11:08:51.534711+00', NULL, 'Resource for user-list-pol-grp-subs-from-roles', NULL, '/api/spaces/v0.1/user-list-pol-grp-subs-from-roles/invoke', 'user-list-pol-grp-subs-from-roles', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('66I5V-LFfq9YoUtYUewBG', '2024-01-18 11:08:51.536351+00', '2024-01-18 11:08:51.536351+00', NULL, 'Resource for user-list-to-add-pol-grp-subs', NULL, '/api/spaces/v0.1/user-list-to-add-pol-grp-subs/invoke', 'user-list-to-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('5J5NUEXeWR1ASgog2ZO59', '2024-01-18 11:08:51.537735+00', '2024-01-18 11:08:51.537735+00', NULL, 'Resource for set-inuse-block-in-app', NULL, '/api/spaces/v0.1/set-inuse-block-in-app/invoke', 'set-inuse-block-in-app', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('URAEQKuj1bzIzsnOIQm5z', '2024-01-18 11:08:51.540554+00', '2024-01-18 11:08:51.540554+00', NULL, 'Resource for update-assign-block-to-app', NULL, '/api/spaces/v0.1/update-assign-block-to-app/invoke', 'update-assign-block-to-app', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('wx9GgyMP9H51e8p69CxDo', '2024-01-18 11:08:51.54207+00', '2024-01-18 11:08:51.54207+00', NULL, 'Resource for roles-add-permissions', NULL, '/api/spaces/v0.1/roles-add-permissions/invoke', 'roles-add-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('gbpiyFlalU_l_YxRmDuo6', '2024-01-18 11:08:51.544261+00', '2024-01-18 11:08:51.544261+00', NULL, 'Resource for create-space', NULL, '/api/spaces/v0.1/create-space/invoke', 'create-space', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 1, 2),
-			('GGI_3qpFjzPjl3rExq6Mk', '2024-01-18 11:08:51.546857+00', '2024-01-18 11:08:51.546857+00', NULL, 'Resource for check-business-name', NULL, '/api/spaces/v0.1/check-business-name/invoke', 'check-business-name', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('ThEYW6j1K4pIatwyRRoYv', '2024-01-18 11:08:51.55003+00', '2024-01-18 11:08:51.55003+00', NULL, 'Resource for revoke-invite', NULL, '/api/spaces/v0.1/revoke-invite/invoke', 'revoke-invite', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('joDRJArzH6tcyai6sfale', '2024-01-18 11:08:51.552815+00', '2024-01-18 11:08:51.552815+00', NULL, 'Resource for teams-list-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-list-existing-pol-grp-subs/invoke', 'teams-list-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('fERUBEMH58hf03aW7ERCK', '2024-01-18 11:08:51.554045+00', '2024-01-18 11:08:51.554045+00', NULL, 'Resource for user-list-pol-grp-subs-from-teams', NULL, '/api/spaces/v0.1/user-list-pol-grp-subs-from-teams/invoke', 'user-list-pol-grp-subs-from-teams', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('-KIBHqjXbpmFmZ-62cgBg', '2024-01-18 11:08:51.559187+00', '2024-01-18 11:08:51.559187+00', NULL, 'Resource for user-add-permissions', NULL, '/api/spaces/v0.1/user-add-permissions/invoke', 'user-add-permissions', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('Hp0MOQJYJOKhxlRTgG2tN', '2024-01-18 11:08:51.561675+00', '2024-01-18 11:08:51.561675+00', NULL, 'Resource for roles-list-permissions', NULL, '/api/spaces/v0.1/roles-list-permissions/invoke', 'roles-list-permissions', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('X6s_JM330WCXad9tCxmkm', '2024-01-18 11:08:51.565457+00', '2024-01-18 11:08:51.565457+00', NULL, 'Resource for roles-list-users', NULL, '/api/spaces/v0.1/roles-list-users/invoke', 'roles-list-users', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('1E40HEwoY0ltpt3A6qEXD', '2024-01-18 11:08:51.566302+00', '2024-01-18 11:08:51.566302+00', NULL, 'Resource for create-role', NULL, '/api/spaces/v0.1/create-role/invoke', 'create-role', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('ZxV7YrY4b33-nZz-ECSZt', '2024-01-18 11:08:51.568668+00', '2024-01-18 11:08:51.568668+00', NULL, 'Resource for update-user', NULL, '/api/spaces/v0.1/update-user/invoke', 'update-user', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('n-NbLgT86s2Agrd6Ba-Zc', '2024-01-18 11:08:51.570122+00', '2024-01-18 11:08:51.570122+00', NULL, 'Resource for teams-delete-user', NULL, '/api/spaces/v0.1/teams-delete-user/invoke', 'teams-delete-user', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('G7UPVuJUHd36plGqSSJNM', '2024-01-18 11:08:51.57299+00', '2024-01-18 11:08:51.57299+00', NULL, 'Resource for roles-create-invite-link', NULL, '/api/spaces/v0.1/roles-create-invite-link/invoke', 'roles-create-invite-link', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('0xLmZz6GSOulH_ttxrxoS', '2024-01-18 11:08:51.576255+00', '2024-01-18 11:08:51.576255+00', NULL, 'Resource for unassign-block-from-app', NULL, '/api/spaces/v0.1/unassign-block-from-app/invoke', 'unassign-block-from-app', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('Z_k8T1TiLY-5Jwj-aOPJu', '2024-01-18 11:08:51.577691+00', '2024-01-18 11:08:51.577691+00', NULL, 'Resource for list-teams', NULL, '/api/spaces/v0.1/list-teams/invoke', 'list-teams', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('izLUFyWmgacyY5T_kWVbC', '2024-01-18 11:08:51.579879+00', '2024-01-18 11:08:51.579879+00', NULL, 'Resource for resend-invite-email', NULL, '/api/spaces/v0.1/resend-invite-email/invoke', 'resend-invite-email', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('Uj-miSHlxeBGfezqyjVkR', '2024-01-18 11:08:51.582047+00', '2024-01-18 11:08:51.582047+00', NULL, 'Resource for roles-list-entities', NULL, '/api/spaces/v0.1/roles-list-entities/invoke', 'roles-list-entities', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('VHGxvTMzg4ifDj2-Vini_', '2024-01-18 11:08:51.585959+00', '2024-01-18 11:08:51.585959+00', NULL, 'Resource for teams-search-user', NULL, '/api/spaces/v0.1/teams-search-user/invoke', 'teams-search-user', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('I-Ntfv4e48G1aQ4mkVeSb', '2024-01-18 11:08:51.586932+00', '2024-01-18 11:08:51.586932+00', NULL, 'Resource for teams-send-user-invite-email', NULL, '/api/spaces/v0.1/teams-send-user-invite-email/invoke', 'teams-send-user-invite-email', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('6_q6lzLxkWfiMA-QezCJY', '2024-01-18 11:08:51.590043+00', '2024-01-18 11:08:51.590043+00', NULL, 'Resource for create-team', NULL, '/api/spaces/v0.1/create-team/invoke', 'create-team', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('xn0BG_Bu2x_5OVxfgRhCw', '2024-01-18 11:08:51.592117+00', '2024-01-18 11:08:51.592117+00', NULL, 'Resource for delete-team', NULL, '/api/spaces/v0.1/delete-team/invoke', 'delete-team', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('TTdMbqj7iPg41viT5faok', '2024-01-18 11:08:51.595837+00', '2024-01-18 11:08:51.595837+00', NULL, 'Resource for user-list-available-permissions', NULL, '/api/spaces/v0.1/user-list-available-permissions/invoke', 'user-list-available-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('bgpsl8TkgQcP6Jif0Tiaq', '2024-01-18 11:08:51.598532+00', '2024-01-18 11:08:51.598532+00', NULL, 'Resource for user-delete-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/user-delete-existing-pol-grp-subs/invoke', 'user-delete-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('IiZ4BWuUEJ6GBkvJLEoEQ', '2024-01-18 11:08:51.604479+00', '2024-01-18 11:08:51.604479+00', NULL, 'Resource for list-roles', NULL, '/api/spaces/v0.1/list-roles/invoke', 'list-roles', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('DvjcCCfkYwkqLrl-S4rHE', '2024-01-18 11:08:51.611528+00', '2024-01-18 11:08:51.611528+00', NULL, 'Resource for get-user-by-id', NULL, '/api/spaces/v0.1/get-user-by-id/invoke', 'get-user-by-id', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('TxFqMz-pzhPefJXaTGuem', '2024-01-18 11:08:51.61403+00', '2024-01-18 11:08:51.61403+00', NULL, 'Resource for user-list-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/user-list-existing-pol-grp-subs/invoke', 'user-list-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('0lgUjlGf5jcRUrYbegzI9', '2024-01-18 11:08:51.614923+00', '2024-01-18 11:08:51.614923+00', NULL, 'Resource for user-add-pol-grp-subs', NULL, '/api/spaces/v0.1/user-add-pol-grp-subs/invoke', 'user-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('MKqIb6eY0ywyjS8wtFHlM', '2024-01-18 11:08:51.615693+00', '2024-01-18 11:08:51.615693+00', NULL, 'Resource for teams-create-invite-link', NULL, '/api/spaces/v0.1/teams-create-invite-link/invoke', 'teams-create-invite-link', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('WNMYOh4kuW6U71BnBFT40', '2024-01-18 11:08:51.616345+00', '2024-01-18 11:08:51.616345+00', NULL, 'Resource for teams-list-users', NULL, '/api/spaces/v0.1/teams-list-users/invoke', 'teams-list-users', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('BB0XAr6sb6_eRpL-udogo', '2024-01-18 11:08:51.616985+00', '2024-01-18 11:08:51.616985+00', NULL, 'Resource for update-role', NULL, '/api/spaces/v0.1/update-role/invoke', 'update-role', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('tlkmt2nypUKIVLrsZ2rZC', '2024-01-18 11:08:51.617835+00', '2024-01-18 11:08:51.617835+00', NULL, 'Resource for roles-list-to-add-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-list-to-add-pol-grp-subs/invoke', 'roles-list-to-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('YWqUUZqNAKmnzgcyYOGxJ', '2024-01-18 11:08:51.619778+00', '2024-01-18 11:08:51.619778+00', NULL, 'Resource for search-user', NULL, '/api/spaces/v0.1/search-user/invoke', 'search-user', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('15lRe9db_hsVJZpat62MY', '2024-01-18 11:08:51.622376+00', '2024-01-18 11:08:51.622376+00', NULL, 'Resource for teams-delete-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-delete-existing-pol-grp-subs/invoke', 'teams-delete-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('NyIsbOMFB-Zq8y6fikhT2', '2024-01-18 11:08:51.634359+00', '2024-01-18 11:08:51.634359+00', NULL, 'Resource for check-space-name', NULL, '/api/spaces/v0.1/check-space-name/invoke', 'check-space-name', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('QWzsvCNBM3gkQbu-wuOKA', '2024-01-18 11:08:51.63615+00', '2024-01-18 11:08:51.63615+00', NULL, 'Resource for teams-list-entities', NULL, '/api/spaces/v0.1/teams-list-entities/invoke', 'teams-list-entities', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('wswn9DbRFAhv3FtIU7I9I', '2024-01-18 11:08:51.63869+00', '2024-01-18 11:08:51.63869+00', NULL, 'Resource for user-list-entities', NULL, '/api/spaces/v0.1/user-list-entities/invoke', 'user-list-entities', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('J3voHDKaM-SfjwH7B5zHZ', '2024-01-18 11:08:51.648064+00', '2024-01-18 11:08:51.648064+00', NULL, 'Resource for check-assigned-block-to-app', NULL, '/api/spaces/v0.1/check-assigned-block-to-app/invoke', 'check-assigned-block-to-app', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('UfkuayXNbQq41etTK2qdQ', '2024-01-18 11:08:51.650737+00', '2024-01-18 11:08:51.650737+00', NULL, 'Resource for update-space', NULL, '/api/spaces/v0.1/update-space/invoke', 'update-space', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('Fii5tyAdtHMLEGxNTpi9k', '2024-01-18 11:08:51.656374+00', '2024-01-18 11:08:51.656374+00', NULL, 'Resource for create-invite-link', NULL, '/api/spaces/v0.1/create-invite-link/invoke', 'create-invite-link', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('1sPvavaQygX4Mx8MkmSLH', '2024-01-18 11:08:51.660287+00', '2024-01-18 11:08:51.660287+00', NULL, 'Resource for roles-add-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-add-pol-grp-subs/invoke', 'roles-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('udbHDGgGsvrp3x8C45Ewm', '2024-01-18 11:08:51.662441+00', '2024-01-18 11:08:51.662441+00', NULL, 'Resource for get-space-by-id', NULL, '/api/spaces/v0.1/get-space-by-id/invoke', 'get-space-by-id', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('jqVlE5nwv5SsDBssJFbkb', '2024-01-18 11:08:51.66505+00', '2024-01-18 11:08:51.66505+00', NULL, 'Resource for roles-send-user-invite-email', NULL, '/api/spaces/v0.1/roles-send-user-invite-email/invoke', 'roles-send-user-invite-email', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('ZOAwbl-C9xwew7QJwG7dG', '2024-01-18 11:08:51.666435+00', '2024-01-18 11:08:51.666435+00', NULL, 'Resource for check-team-name', NULL, '/api/spaces/v0.1/check-team-name/invoke', 'check-team-name', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('CHznnsnt5Bm2163PFY5fz', '2024-01-18 11:08:51.674641+00', '2024-01-18 11:08:51.674641+00', NULL, 'Resource for assign-block-to-app', NULL, '/api/spaces/v0.1/assign-block-to-app/invoke', 'assign-block-to-app', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('Si25JQ8ddYkURkv_CSrlw', '2024-01-18 11:08:51.682028+00', '2024-01-18 11:08:51.682028+00', NULL, 'Resource for roles-list-available-permissions', NULL, '/api/spaces/v0.1/roles-list-available-permissions/invoke', 'roles-list-available-permissions', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('LJGas2LZHBNTcdm_W_GTL', '2024-01-18 11:08:51.68639+00', '2024-01-18 11:08:51.68639+00', NULL, 'Resource for delete-space', NULL, '/api/spaces/v0.1/delete-space/invoke', 'delete-space', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app) , 2, 2),
-			('9eR07Sa5utsH1NXov9TZt', '2024-01-18 11:08:51.690547+00', '2024-01-18 11:08:51.690547+00', NULL, 'Resource for update-team', NULL, '/api/spaces/v0.1/update-team/invoke', 'update-team', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('xq1B9es0X7WxpiVYN9csM', '2024-01-18 11:08:51.699858+00', '2024-01-18 11:08:51.699858+00', NULL, 'Resource for get-invite-by-id', NULL, '/api/spaces/v0.1/get-invite-by-id/invoke', 'get-invite-by-id', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('LtXPeRYgWGibsPZlowWe2', '2024-01-18 11:08:51.701927+00', '2024-01-18 11:08:51.701927+00', NULL, 'Resource for roles-delete-user', NULL, '/api/spaces/v0.1/roles-delete-user/invoke', 'roles-delete-user', 'spaces', 'POST', 'v0.1', NULL,(SELECT app_id FROM shield_app), 2, 2),
-			('tWQHiQJrI0U190O-hd7sj', '2024-01-18 11:08:51.654099+00', '2024-01-18 11:08:51.654099+00', NULL, 'Resource for accept-invite', NULL, '/api/spaces/v0.1/accept-invite/invoke', 'accept-invite', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('twerfHiyudjkI0U190O-hd7sj', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for list-entity-definition', NULL, '/api/spaces/v0.1/list-entity-definition/invoke', 'list-entity-definition', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 1, 2),
-			('QNXip-DHCwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for create-entity', NULL, '/api/spaces/v0.1/create-entity/invoke', 'create-entity', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('QNXibdtb-DHCwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for user-add-entities', NULL, '/api/spaces/v0.1/user-add-entities/invoke', 'user-add-entities', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2),
-			('QNXibdtb-DygdwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for entity name check', NULL, '/api/spaces/v0.1/check-entity-name/invoke', 'check-entity-name', 'spaces', 'POST', 'v0.1', NULL, (SELECT app_id FROM shield_app), 2, 2)
+			('550e8400-e29b-41d4-a716-446655440000', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'teams-add-permissions', NULL, '/api/spaces/v0.1/teams-add-permissions/invoke', 'list-licenses', 'spaces', 'POST', 'V.01', NULL, 2, 2) ,
+			('fK8cav2w8b7mCyvoP3Bdr', '2024-01-18 06:22:38.981638+00', '2024-01-18 06:22:38.981638+00', NULL, 'Resource for list-spaces', NULL, '/api/spaces/v0.1/list-spaces/invoke', 'list-spaces', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('550e84s00-e29b-4hgy4-a716-446655440000', '2024-01-18 10:35:49.613494+00', '2024-01-18 10:35:49.613494+00', NULL, 'create-invite_link', NULL, '/api/spaces/v0.1/create-invite-link/invoke', 'create-invite_link', 'spaces', 'POST', 'V.01', NULL, 2, 2),
+			('cYFau9EH6ANQZC-LrvCHO', '2024-01-18 11:08:51.482964+00', '2024-01-18 11:08:51.482964+00', NULL, 'Resource for teams-list-to-add-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-list-to-add-pol-grp-subs/invoke', 'teams-list-to-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('FNTFcHkDGRYrU9-m_gkSA', '2024-01-18 11:08:51.490274+00', '2024-01-18 11:08:51.490274+00', NULL, 'Resource for user-list-available-entities', NULL, '/api/spaces/v0.1/user-list-available-entities/invoke', 'user-list-available-entities', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('jzAxzMT81Kv8aCZEcQgc8', '2024-01-18 11:08:51.491261+00', '2024-01-18 11:08:51.491261+00', NULL, 'Resource for check-role-name', NULL, '/api/spaces/v0.1/check-role-name/invoke', 'check-role-name', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('9LjrDvq1AFKTcv8hBbUGP', '2024-01-18 11:08:51.492943+00', '2024-01-18 11:08:51.492943+00', NULL, 'Resource for cancel-invite', NULL, '/api/spaces/v0.1/cancel-invite/invoke', 'cancel-invite', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('d-wOysylDamL7hIO0QrZC', '2024-01-18 11:08:51.496833+00', '2024-01-18 11:08:51.496833+00', NULL, 'Resource for roles-list-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-list-existing-pol-grp-subs/invoke', 'roles-list-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('h0Iy61Gqa8AOwq1gt2RUx', '2024-01-18 11:08:51.498867+00', '2024-01-18 11:08:51.498867+00', NULL, 'Resource for roles-delete-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-delete-existing-pol-grp-subs/invoke', 'roles-delete-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('84_Yq5VzvLiVEBmiCfsh2', '2024-01-18 11:08:51.501083+00', '2024-01-18 11:08:51.501083+00', NULL, 'Resource for teams-add-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-add-pol-grp-subs/invoke', 'teams-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('DA6eNzlrdKH5EqjpYjjga', '2024-01-18 11:08:51.504112+00', '2024-01-18 11:08:51.504112+00', NULL, 'Resource for teams-list-available-permissions', NULL, '/api/spaces/v0.1/teams-list-available-permissions/invoke', 'teams-list-available-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('N4sjxTnNf1hewEXqWXWJL', '2024-01-18 11:08:51.507645+00', '2024-01-18 11:08:51.507645+00', NULL, 'Resource for teams-add-permissions', NULL, '/api/spaces/v0.1/teams-add-permissions/invoke', 'teams-add-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('xWLAvUnRa6YsH9ueNnc9_', '2024-01-18 11:08:51.510679+00', '2024-01-18 11:08:51.510679+00', NULL, 'Resource for create-logo-signed-url', NULL, '/api/spaces/v0.1/create-logo-signed-url/invoke', 'create-logo-signed-url', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('KrzwOoRAQ-Gb0nV4v7X7R', '2024-01-18 11:08:51.515918+00', '2024-01-18 11:08:51.515918+00', NULL, 'Resource for roles-search-user', NULL, '/api/spaces/v0.1/roles-search-user/invoke', 'roles-search-user', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('QMo-wqpa6ptG9Uz-JphVt', '2024-01-18 11:08:51.517827+00', '2024-01-18 11:08:51.517827+00', NULL, 'Resource for list-spaces-detailed', NULL, '/api/spaces/v0.1/list-spaces-detailed/invoke', 'list-spaces-detailed', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('ybT6UL9cWQOvcUBfSIFRj', '2024-01-18 11:08:51.519145+00', '2024-01-18 11:08:51.519145+00', NULL, 'Resource for send-user-invite-email', NULL, '/api/spaces/v0.1/send-user-invite-email/invoke', 'send-user-invite-email', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('gmFwBdvYaUY_BvbHMNhyX', '2024-01-18 11:08:51.521206+00', '2024-01-18 11:08:51.521206+00', NULL, 'Resource for list-invited-users', NULL, '/api/spaces/v0.1/list-invited-users/invoke', 'list-invited-users', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('g5fh9UFlrq_1OP1IgZksH', '2024-01-18 11:08:51.525172+00', '2024-01-18 11:08:51.525172+00', NULL, 'Resource for user-list-permissions', NULL, '/api/spaces/v0.1/user-list-permissions/invoke', 'user-list-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('rKsvAsb9hAeN4vNoqdAnM', '2024-01-18 11:08:51.531688+00', '2024-01-18 11:08:51.531688+00', NULL, 'Resource for teams-list-permissions', NULL, '/api/spaces/v0.1/teams-list-permissions/invoke', 'teams-list-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('fQKcNySVMXeqbIFNx8oMW', '2024-01-18 11:08:51.532744+00', '2024-01-18 11:08:51.532744+00', NULL, 'Resource for list-users', NULL, '/api/spaces/v0.1/list-users/invoke', 'list-users', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('SjSs4Hvbya78GUJUTc3M0', '2024-01-18 11:08:51.534711+00', '2024-01-18 11:08:51.534711+00', NULL, 'Resource for user-list-pol-grp-subs-from-roles', NULL, '/api/spaces/v0.1/user-list-pol-grp-subs-from-roles/invoke', 'user-list-pol-grp-subs-from-roles', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('66I5V-LFfq9YoUtYUewBG', '2024-01-18 11:08:51.536351+00', '2024-01-18 11:08:51.536351+00', NULL, 'Resource for user-list-to-add-pol-grp-subs', NULL, '/api/spaces/v0.1/user-list-to-add-pol-grp-subs/invoke', 'user-list-to-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('5J5NUEXeWR1ASgog2ZO59', '2024-01-18 11:08:51.537735+00', '2024-01-18 11:08:51.537735+00', NULL, 'Resource for set-inuse-block-in-app', NULL, '/api/spaces/v0.1/set-inuse-block-in-app/invoke', 'set-inuse-block-in-app', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('URAEQKuj1bzIzsnOIQm5z', '2024-01-18 11:08:51.540554+00', '2024-01-18 11:08:51.540554+00', NULL, 'Resource for update-assign-block-to-app', NULL, '/api/spaces/v0.1/update-assign-block-to-app/invoke', 'update-assign-block-to-app', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('wx9GgyMP9H51e8p69CxDo', '2024-01-18 11:08:51.54207+00', '2024-01-18 11:08:51.54207+00', NULL, 'Resource for roles-add-permissions', NULL, '/api/spaces/v0.1/roles-add-permissions/invoke', 'roles-add-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('gbpiyFlalU_l_YxRmDuo6', '2024-01-18 11:08:51.544261+00', '2024-01-18 11:08:51.544261+00', NULL, 'Resource for create-space', NULL, '/api/spaces/v0.1/create-space/invoke', 'create-space', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('GGI_3qpFjzPjl3rExq6Mk', '2024-01-18 11:08:51.546857+00', '2024-01-18 11:08:51.546857+00', NULL, 'Resource for check-business-name', NULL, '/api/spaces/v0.1/check-business-name/invoke', 'check-business-name', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('ThEYW6j1K4pIatwyRRoYv', '2024-01-18 11:08:51.55003+00', '2024-01-18 11:08:51.55003+00', NULL, 'Resource for revoke-invite', NULL, '/api/spaces/v0.1/revoke-invite/invoke', 'revoke-invite', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('joDRJArzH6tcyai6sfale', '2024-01-18 11:08:51.552815+00', '2024-01-18 11:08:51.552815+00', NULL, 'Resource for teams-list-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-list-existing-pol-grp-subs/invoke', 'teams-list-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('fERUBEMH58hf03aW7ERCK', '2024-01-18 11:08:51.554045+00', '2024-01-18 11:08:51.554045+00', NULL, 'Resource for user-list-pol-grp-subs-from-teams', NULL, '/api/spaces/v0.1/user-list-pol-grp-subs-from-teams/invoke', 'user-list-pol-grp-subs-from-teams', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('-KIBHqjXbpmFmZ-62cgBg', '2024-01-18 11:08:51.559187+00', '2024-01-18 11:08:51.559187+00', NULL, 'Resource for user-add-permissions', NULL, '/api/spaces/v0.1/user-add-permissions/invoke', 'user-add-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('Hp0MOQJYJOKhxlRTgG2tN', '2024-01-18 11:08:51.561675+00', '2024-01-18 11:08:51.561675+00', NULL, 'Resource for roles-list-permissions', NULL, '/api/spaces/v0.1/roles-list-permissions/invoke', 'roles-list-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('X6s_JM330WCXad9tCxmkm', '2024-01-18 11:08:51.565457+00', '2024-01-18 11:08:51.565457+00', NULL, 'Resource for roles-list-users', NULL, '/api/spaces/v0.1/roles-list-users/invoke', 'roles-list-users', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('1E40HEwoY0ltpt3A6qEXD', '2024-01-18 11:08:51.566302+00', '2024-01-18 11:08:51.566302+00', NULL, 'Resource for create-role', NULL, '/api/spaces/v0.1/create-role/invoke', 'create-role', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('ZxV7YrY4b33-nZz-ECSZt', '2024-01-18 11:08:51.568668+00', '2024-01-18 11:08:51.568668+00', NULL, 'Resource for update-user', NULL, '/api/spaces/v0.1/update-user/invoke', 'update-user', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('n-NbLgT86s2Agrd6Ba-Zc', '2024-01-18 11:08:51.570122+00', '2024-01-18 11:08:51.570122+00', NULL, 'Resource for teams-delete-user', NULL, '/api/spaces/v0.1/teams-delete-user/invoke', 'teams-delete-user', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('G7UPVuJUHd36plGqSSJNM', '2024-01-18 11:08:51.57299+00', '2024-01-18 11:08:51.57299+00', NULL, 'Resource for roles-create-invite-link', NULL, '/api/spaces/v0.1/roles-create-invite-link/invoke', 'roles-create-invite-link', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('0xLmZz6GSOulH_ttxrxoS', '2024-01-18 11:08:51.576255+00', '2024-01-18 11:08:51.576255+00', NULL, 'Resource for unassign-block-from-app', NULL, '/api/spaces/v0.1/unassign-block-from-app/invoke', 'unassign-block-from-app', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('Z_k8T1TiLY-5Jwj-aOPJu', '2024-01-18 11:08:51.577691+00', '2024-01-18 11:08:51.577691+00', NULL, 'Resource for list-teams', NULL, '/api/spaces/v0.1/list-teams/invoke', 'list-teams', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('izLUFyWmgacyY5T_kWVbC', '2024-01-18 11:08:51.579879+00', '2024-01-18 11:08:51.579879+00', NULL, 'Resource for resend-invite-email', NULL, '/api/spaces/v0.1/resend-invite-email/invoke', 'resend-invite-email', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('Uj-miSHlxeBGfezqyjVkR', '2024-01-18 11:08:51.582047+00', '2024-01-18 11:08:51.582047+00', NULL, 'Resource for roles-list-entities', NULL, '/api/spaces/v0.1/roles-list-entities/invoke', 'roles-list-entities', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('VHGxvTMzg4ifDj2-Vini_', '2024-01-18 11:08:51.585959+00', '2024-01-18 11:08:51.585959+00', NULL, 'Resource for teams-search-user', NULL, '/api/spaces/v0.1/teams-search-user/invoke', 'teams-search-user', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('I-Ntfv4e48G1aQ4mkVeSb', '2024-01-18 11:08:51.586932+00', '2024-01-18 11:08:51.586932+00', NULL, 'Resource for teams-send-user-invite-email', NULL, '/api/spaces/v0.1/teams-send-user-invite-email/invoke', 'teams-send-user-invite-email', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('6_q6lzLxkWfiMA-QezCJY', '2024-01-18 11:08:51.590043+00', '2024-01-18 11:08:51.590043+00', NULL, 'Resource for create-team', NULL, '/api/spaces/v0.1/create-team/invoke', 'create-team', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('xn0BG_Bu2x_5OVxfgRhCw', '2024-01-18 11:08:51.592117+00', '2024-01-18 11:08:51.592117+00', NULL, 'Resource for delete-team', NULL, '/api/spaces/v0.1/delete-team/invoke', 'delete-team', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('TTdMbqj7iPg41viT5faok', '2024-01-18 11:08:51.595837+00', '2024-01-18 11:08:51.595837+00', NULL, 'Resource for user-list-available-permissions', NULL, '/api/spaces/v0.1/user-list-available-permissions/invoke', 'user-list-available-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('bgpsl8TkgQcP6Jif0Tiaq', '2024-01-18 11:08:51.598532+00', '2024-01-18 11:08:51.598532+00', NULL, 'Resource for user-delete-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/user-delete-existing-pol-grp-subs/invoke', 'user-delete-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('IiZ4BWuUEJ6GBkvJLEoEQ', '2024-01-18 11:08:51.604479+00', '2024-01-18 11:08:51.604479+00', NULL, 'Resource for list-roles', NULL, '/api/spaces/v0.1/list-roles/invoke', 'list-roles', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('DvjcCCfkYwkqLrl-S4rHE', '2024-01-18 11:08:51.611528+00', '2024-01-18 11:08:51.611528+00', NULL, 'Resource for get-user-by-id', NULL, '/api/spaces/v0.1/get-user-by-id/invoke', 'get-user-by-id', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('TxFqMz-pzhPefJXaTGuem', '2024-01-18 11:08:51.61403+00', '2024-01-18 11:08:51.61403+00', NULL, 'Resource for user-list-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/user-list-existing-pol-grp-subs/invoke', 'user-list-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('0lgUjlGf5jcRUrYbegzI9', '2024-01-18 11:08:51.614923+00', '2024-01-18 11:08:51.614923+00', NULL, 'Resource for user-add-pol-grp-subs', NULL, '/api/spaces/v0.1/user-add-pol-grp-subs/invoke', 'user-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('MKqIb6eY0ywyjS8wtFHlM', '2024-01-18 11:08:51.615693+00', '2024-01-18 11:08:51.615693+00', NULL, 'Resource for teams-create-invite-link', NULL, '/api/spaces/v0.1/teams-create-invite-link/invoke', 'teams-create-invite-link', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('WNMYOh4kuW6U71BnBFT40', '2024-01-18 11:08:51.616345+00', '2024-01-18 11:08:51.616345+00', NULL, 'Resource for teams-list-users', NULL, '/api/spaces/v0.1/teams-list-users/invoke', 'teams-list-users', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('BB0XAr6sb6_eRpL-udogo', '2024-01-18 11:08:51.616985+00', '2024-01-18 11:08:51.616985+00', NULL, 'Resource for update-role', NULL, '/api/spaces/v0.1/update-role/invoke', 'update-role', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('tlkmt2nypUKIVLrsZ2rZC', '2024-01-18 11:08:51.617835+00', '2024-01-18 11:08:51.617835+00', NULL, 'Resource for roles-list-to-add-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-list-to-add-pol-grp-subs/invoke', 'roles-list-to-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('YWqUUZqNAKmnzgcyYOGxJ', '2024-01-18 11:08:51.619778+00', '2024-01-18 11:08:51.619778+00', NULL, 'Resource for search-user', NULL, '/api/spaces/v0.1/search-user/invoke', 'search-user', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('15lRe9db_hsVJZpat62MY', '2024-01-18 11:08:51.622376+00', '2024-01-18 11:08:51.622376+00', NULL, 'Resource for teams-delete-existing-pol-grp-subs', NULL, '/api/spaces/v0.1/teams-delete-existing-pol-grp-subs/invoke', 'teams-delete-existing-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('NyIsbOMFB-Zq8y6fikhT2', '2024-01-18 11:08:51.634359+00', '2024-01-18 11:08:51.634359+00', NULL, 'Resource for check-space-name', NULL, '/api/spaces/v0.1/check-space-name/invoke', 'check-space-name', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('QWzsvCNBM3gkQbu-wuOKA', '2024-01-18 11:08:51.63615+00', '2024-01-18 11:08:51.63615+00', NULL, 'Resource for teams-list-entities', NULL, '/api/spaces/v0.1/teams-list-entities/invoke', 'teams-list-entities', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('wswn9DbRFAhv3FtIU7I9I', '2024-01-18 11:08:51.63869+00', '2024-01-18 11:08:51.63869+00', NULL, 'Resource for user-list-entities', NULL, '/api/spaces/v0.1/user-list-entities/invoke', 'user-list-entities', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('J3voHDKaM-SfjwH7B5zHZ', '2024-01-18 11:08:51.648064+00', '2024-01-18 11:08:51.648064+00', NULL, 'Resource for check-assigned-block-to-app', NULL, '/api/spaces/v0.1/check-assigned-block-to-app/invoke', 'check-assigned-block-to-app', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('UfkuayXNbQq41etTK2qdQ', '2024-01-18 11:08:51.650737+00', '2024-01-18 11:08:51.650737+00', NULL, 'Resource for update-space', NULL, '/api/spaces/v0.1/update-space/invoke', 'update-space', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('Fii5tyAdtHMLEGxNTpi9k', '2024-01-18 11:08:51.656374+00', '2024-01-18 11:08:51.656374+00', NULL, 'Resource for create-invite-link', NULL, '/api/spaces/v0.1/create-invite-link/invoke', 'create-invite-link', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('1sPvavaQygX4Mx8MkmSLH', '2024-01-18 11:08:51.660287+00', '2024-01-18 11:08:51.660287+00', NULL, 'Resource for roles-add-pol-grp-subs', NULL, '/api/spaces/v0.1/roles-add-pol-grp-subs/invoke', 'roles-add-pol-grp-subs', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('udbHDGgGsvrp3x8C45Ewm', '2024-01-18 11:08:51.662441+00', '2024-01-18 11:08:51.662441+00', NULL, 'Resource for get-space-by-id', NULL, '/api/spaces/v0.1/get-space-by-id/invoke', 'get-space-by-id', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('jqVlE5nwv5SsDBssJFbkb', '2024-01-18 11:08:51.66505+00', '2024-01-18 11:08:51.66505+00', NULL, 'Resource for roles-send-user-invite-email', NULL, '/api/spaces/v0.1/roles-send-user-invite-email/invoke', 'roles-send-user-invite-email', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('ZOAwbl-C9xwew7QJwG7dG', '2024-01-18 11:08:51.666435+00', '2024-01-18 11:08:51.666435+00', NULL, 'Resource for check-team-name', NULL, '/api/spaces/v0.1/check-team-name/invoke', 'check-team-name', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('CHznnsnt5Bm2163PFY5fz', '2024-01-18 11:08:51.674641+00', '2024-01-18 11:08:51.674641+00', NULL, 'Resource for assign-block-to-app', NULL, '/api/spaces/v0.1/assign-block-to-app/invoke', 'assign-block-to-app', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('Si25JQ8ddYkURkv_CSrlw', '2024-01-18 11:08:51.682028+00', '2024-01-18 11:08:51.682028+00', NULL, 'Resource for roles-list-available-permissions', NULL, '/api/spaces/v0.1/roles-list-available-permissions/invoke', 'roles-list-available-permissions', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('LJGas2LZHBNTcdm_W_GTL', '2024-01-18 11:08:51.68639+00', '2024-01-18 11:08:51.68639+00', NULL, 'Resource for delete-space', NULL, '/api/spaces/v0.1/delete-space/invoke', 'delete-space', 'spaces', 'POST', 'v0.1', NULL , 2, 2),
+			('9eR07Sa5utsH1NXov9TZt', '2024-01-18 11:08:51.690547+00', '2024-01-18 11:08:51.690547+00', NULL, 'Resource for update-team', NULL, '/api/spaces/v0.1/update-team/invoke', 'update-team', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('xq1B9es0X7WxpiVYN9csM', '2024-01-18 11:08:51.699858+00', '2024-01-18 11:08:51.699858+00', NULL, 'Resource for get-invite-by-id', NULL, '/api/spaces/v0.1/get-invite-by-id/invoke', 'get-invite-by-id', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('LtXPeRYgWGibsPZlowWe2', '2024-01-18 11:08:51.701927+00', '2024-01-18 11:08:51.701927+00', NULL, 'Resource for roles-delete-user', NULL, '/api/spaces/v0.1/roles-delete-user/invoke', 'roles-delete-user', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('tWQHiQJrI0U190O-hd7sj', '2024-01-18 11:08:51.654099+00', '2024-01-18 11:08:51.654099+00', NULL, 'Resource for accept-invite', NULL, '/api/spaces/v0.1/accept-invite/invoke', 'accept-invite', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('twerfHiyudjkI0U190O-hd7sj', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for list-entity-definition', NULL, '/api/spaces/v0.1/list-entity-definition/invoke', 'list-entity-definition', 'spaces', 'POST', 'v0.1', NULL, 1, 2),
+			('QNXip-DHCwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for create-entity', NULL, '/api/spaces/v0.1/create-entity/invoke', 'create-entity', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('QNXibdtb-DHCwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for user-add-entities', NULL, '/api/spaces/v0.1/user-add-entities/invoke', 'user-add-entities', 'spaces', 'POST', 'v0.1', NULL, 2, 2),
+			('QNXibdtb-DygdwaO6TP1YbuU', '2024-01-18 11:08:51.664079+00', '2024-01-18 11:08:51.653069+00', NULL, 'Resource for entity name check', NULL, '/api/spaces/v0.1/check-entity-name/invoke', 'check-entity-name', 'spaces', 'POST', 'v0.1', NULL, 2, 2)
 	        ON CONFLICT DO NOTHING;`)
 
-	acRes := db.Exec(acResQuery, clientID)
+	acRes := db.Exec(acResQuery)
 	if acRes.Error != nil {
 		log.Fatal("Error")
 	}
@@ -484,23 +479,17 @@ func Migrate(db *gorm.DB) {
 		,'roles-delete-existing-pol-grp-subs','roles-list-app-entities','roles-add-app-entities','roles-list-entities','roles-add-block-entities','roles-create-invite-link','roles-send-user-invite-email',
 		'teams-list-users','teams-create-invite-link','teams-search-user','teams-send-user-invite-email','teams-list-existing-pol-grp-subs','teams-list-to-add-pol-grp-subs','teams-add-pol-grp-subs',
 		'teams-delete-existing-pol-grp-subs','teams-list-app-entities','user-add-permissions','user-add-entities',
-		'teams-add-app-entities','teams-list-entities','teams-add-block-entities','create-role','create-team','get-user-by-id','update-user','list-spaces-detailed','roles-delete-user','cancel_invite','list-entity-definition','user-list-available-entities','teams-list-available-permissions','teams-add-permissions','teams-list-permissions','roles-list-available-permissions','roles-add-permissions','roles-list-permissions') and ac_res.owner_app_id in (SELECT app_id
-            FROM shield_apps 
-            WHERE client_id =?) on conflict do nothing;`, clientID)
+		'teams-add-app-entities','teams-list-entities','teams-add-block-entities','create-role','create-team','get-user-by-id','update-user','list-spaces-detailed','roles-delete-user','cancel_invite','list-entity-definition','user-list-available-entities','teams-list-available-permissions','teams-add-permissions','teams-list-permissions','roles-list-available-permissions','roles-add-permissions','roles-list-permissions')  on conflict do nothing;`)
 
 	if acResGrpRes.Error != nil {
 		log.Fatal("Error")
 	}
 	//seeding actions table its basically api action methods
 	acAct := db.Exec(`
-	WITH shield_app AS (
-		SELECT app_id
-		FROM shield_apps
-		WHERE client_id = ?
-	)
+	
 	INSERT INTO public.ac_actions(
-			id, created_at, updated_at, deleted_at,  name, description,opt_counter,owner_app_id)
-			VALUES ('QynaTw021PRwJg57GauYG',now(),now(),null,'invoke','predefined invoke action for resource',null,(SELECT app_id FROM shield_app)) on conflict do nothing;`, clientID)
+			id, created_at, updated_at, deleted_at,  name, description,opt_counter)
+			VALUES ('QynaTw021PRwJg57GauYG',now(),now(),null,'invoke','predefined invoke action for resource',null) on conflict do nothing;`)
 
 	if acAct.Error != nil {
 		log.Fatal("Error")
@@ -520,9 +509,7 @@ func Migrate(db *gorm.DB) {
 		select 'EPATshPgmCI2PZC9Oec9_',now(),now(),null,actgrp.id,ac_act.id,null from ac_act_grps actgrp
 		left join ac_actions ac_act on true
 		where actgrp.name in ('ACL Access Permission')
-	    and ac_act.description in ('predefined invoke action for resource') and ac_act.owner_app_id in (SELECT app_id
-            FROM shield_apps 
-            WHERE client_id =?) on conflict do nothing;`, clientID)
+	    and ac_act.description in ('predefined invoke action for resource')  on conflict do nothing;`)
 
 	if actGrpAct.Error != nil {
 		log.Fatal("Error")
@@ -641,9 +628,9 @@ func Migrate(db *gorm.DB) {
 	        id, created_at, updated_at, deleted_at,
 	        name, description, path, function_name,
 	        entity_name, function_method, version, opt_counter,
-	        owner_app_id, is_authorised, is_authenticated
+	         is_authorised, is_authenticated
 	    ) VALUES
-			('6qpQOAUO5I8rIf8_0N83vONLsRVUsoJ-', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'addToDo', NULL, '/api/todo/v0.1/addToDo/invoke', 'addToDo', 'todo', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) ,('2jKGc8nZdRagQTnRdM1tVsujjL6j6DTz', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'listToDo', NULL, '/api/todo/v0.1/listToDo/invoke', 'listToDo', 'todo', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) ,('Vl1F8lTUQ7bOHsoY9flFpds6hLjdU7HO', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'removeToDo', NULL, '/api/todo/v0.1/removeToDo/invoke', 'removeToDo', 'todo', 'POST', 'V.01', NULL, (SELECT app_id FROM shield_app), 2, 2) 
+			('6qpQOAUO5I8rIf8_0N83vONLsRVUsoJ-', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'addToDo', NULL, '/api/todo/v0.1/addToDo/invoke', 'addToDo', 'todo', 'POST', 'V.01', NULL, 2, 2) ,('2jKGc8nZdRagQTnRdM1tVsujjL6j6DTz', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'listToDo', NULL, '/api/todo/v0.1/listToDo/invoke', 'listToDo', 'todo', 'POST', 'V.01', NULL, 2, 2) ,('Vl1F8lTUQ7bOHsoY9flFpds6hLjdU7HO', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'removeToDo', NULL, '/api/todo/v0.1/removeToDo/invoke', 'removeToDo', 'todo', 'POST', 'V.01', NULL, 2, 2) 
 			
 	        ON CONFLICT DO NOTHING;`)
 
@@ -669,9 +656,7 @@ func Migrate(db *gorm.DB) {
 		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
 		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
 		where ac_res_grp.name in ('ToDo List Access') and
-		ac_res.function_name in ('listToDo') and ac_res.owner_app_id in (SELECT app_id
-            FROM shield_apps 
-            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+		ac_res.function_name in ('listToDo')  on conflict do nothing;`)
 
 	if todoListResGpRes.Error != nil {
 		log.Fatal("Error")
@@ -682,9 +667,7 @@ func Migrate(db *gorm.DB) {
 		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
 		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
 		where ac_res_grp.name in ('ToDo Create Access') and
-		ac_res.function_name in ('addToDo') and ac_res.owner_app_id in (SELECT app_id
-            FROM shield_apps 
-            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+		ac_res.function_name in ('addToDo')  on conflict do nothing;`)
 
 	if todoCreateResGpRes.Error != nil {
 		log.Fatal("Error")
@@ -695,23 +678,17 @@ func Migrate(db *gorm.DB) {
 		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
 		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
 		where ac_res_grp.name in ('ToDo Delete Access') and
-		ac_res.function_name in ('removeToDo') and ac_res.owner_app_id in (SELECT app_id
-            FROM shield_apps 
-            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+		ac_res.function_name in ('removeToDo')  on conflict do nothing;`)
 
 	if todoDeleteResGpRes.Error != nil {
 		log.Fatal("Error")
 	}
 	//seeding actions table its basically api action methods
 	toDoAct := db.Exec(`
-	WITH shield_app AS (
-		SELECT app_id
-		FROM shield_apps
-		WHERE client_id = ?
-	)
+
 	INSERT INTO public.ac_actions(
-			id, created_at, updated_at, deleted_at,  name, description,opt_counter,owner_app_id)
-			VALUES ('cssMjXvSm-sbLG1FZgH4UKU3iDQvp8rK',now(),now(),null,'invoke','predefined invoke action for resource',null,(SELECT app_id FROM shield_app)) on conflict do nothing;`, todoAppClientID)
+			id, created_at, updated_at, deleted_at,  name, description,opt_counter)
+			VALUES ('cssMjXvSm-sbLG1FZgH4UKU3iDQvp8rK',now(),now(),null,'invoke','predefined invoke action for resource',null) on conflict do nothing;`)
 
 	if toDoAct.Error != nil {
 		log.Fatal("Error")
@@ -731,9 +708,7 @@ func Migrate(db *gorm.DB) {
 		select 'BEWYfrJtDctmQq-Nc-1k5UrvnB3UF1sG',now(),now(),null,actgrp.id,ac_act.id,null from ac_act_grps actgrp
 		left join ac_actions ac_act on true
 		where actgrp.name in ('ToDo Action Group')
-	    and ac_act.description in ('predefined invoke action for resource') and ac_act.owner_app_id in (SELECT app_id
-            FROM shield_apps 
-            WHERE client_id =?) on conflict do nothing;`, todoAppClientID)
+	    and ac_act.description in ('predefined invoke action for resource')  on conflict do nothing;`)
 
 	if todoActGrpAct.Error != nil {
 		log.Fatal("Error")
