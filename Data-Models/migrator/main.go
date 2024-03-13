@@ -630,7 +630,7 @@ func Migrate(db *gorm.DB) {
 	        entity_name, function_method, version, opt_counter,
 	         is_authorised, is_authenticated
 	    ) VALUES
-			('6qpQOAUO5I8rIf8_0N83vONLsRVUsoJ-', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'addToDo', NULL, '/api/todo/v0.1/addToDo/invoke', 'addToDo', 'todo', 'POST', 'V.01', NULL, 2, 2) ,('2jKGc8nZdRagQTnRdM1tVsujjL6j6DTz', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'listToDo', NULL, '/api/todo/v0.1/listToDo/invoke', 'listToDo', 'todo', 'POST', 'V.01', NULL, 2, 2) ,('Vl1F8lTUQ7bOHsoY9flFpds6hLjdU7HO', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'removeToDo', NULL, '/api/todo/v0.1/removeToDo/invoke', 'removeToDo', 'todo', 'POST', 'V.01', NULL, 2, 2) 
+			('6qpQOAUO5I8rIf8_0N83vONLsRVUsoJ-', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'addTodo', NULL, '/api/todo/v0.1/addTodo/invoke', 'addTodo', 'todo', 'POST', 'V.01', NULL, 2, 2) ,('2jKGc8nZdRagQTnRdM1tVsujjL6j6DTz', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'listTodo', NULL, '/api/todo/v0.1/listTodo/invoke', 'listTodo', 'todo', 'POST', 'V.01', NULL, 2, 2) ,('Vl1F8lTUQ7bOHsoY9flFpds6hLjdU7HO', '2024-01-16 09:46:31.875919+00', '2024-01-16 09:46:31.875919+00', NULL, 'removeTodo', NULL, '/api/todo/v0.1/removeTodo/invoke', 'removeTodo', 'todo', 'POST', 'V.01', NULL, 2, 2) 
 			
 	        ON CONFLICT DO NOTHING;`)
 
@@ -656,7 +656,7 @@ func Migrate(db *gorm.DB) {
 		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
 		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
 		where ac_res_grp.name in ('ToDo List Access') and
-		ac_res.function_name in ('listToDo')  on conflict do nothing;`)
+		ac_res.function_name in ('listTodo')  on conflict do nothing;`)
 
 	if todoListResGpRes.Error != nil {
 		log.Fatal("Error")
@@ -667,7 +667,7 @@ func Migrate(db *gorm.DB) {
 		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
 		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
 		where ac_res_grp.name in ('ToDo Create Access') and
-		ac_res.function_name in ('addToDo')  on conflict do nothing;`)
+		ac_res.function_name in ('addTodo')  on conflict do nothing;`)
 
 	if todoCreateResGpRes.Error != nil {
 		log.Fatal("Error")
@@ -678,7 +678,7 @@ func Migrate(db *gorm.DB) {
 		select nanoid(),now(),now(),null,ac_res_grp.id,ac_res.id,null
 		from ac_res_grps ac_res_grp left join ac_resources ac_res on true
 		where ac_res_grp.name in ('ToDo Delete Access') and
-		ac_res.function_name in ('removeToDo')  on conflict do nothing;`)
+		ac_res.function_name in ('removeTodo')  on conflict do nothing;`)
 
 	if todoDeleteResGpRes.Error != nil {
 		log.Fatal("Error")
