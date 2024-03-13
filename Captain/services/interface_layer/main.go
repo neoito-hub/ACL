@@ -4,35 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"gorm.io/gorm"
 )
 
-func Handler(shieldUser string, req *http.Request, writer http.ResponseWriter, db *gorm.DB) (OwnerCheckData, error) {
-	urlFragments := strings.Split(req.URL.Path, "/")
+func Handler(shieldUser string, req *http.Request, writer http.ResponseWriter, db *gorm.DB, actionName string, functionName string, spaceID string) (OwnerCheckData, error) {
 
-	actionName := urlFragments[len(urlFragments)-1]
-	functionName := urlFragments[len(urlFragments)-2]
-	//hostName := req.Host
-	hostName := "http://localhost:3011"
-
-	spaceID := req.Header.Get("space_id")
-
-	var appDetails AppData
+	// var appDetails AppData
 	var ownerCheckData OwnerCheckData
-
-	appQuery := `select a.app_id from shield_apps a inner join shield_app_domain_mappings sd 
-	on sd.owner_app_id=a.app_id where sd.url =?`
-
-	appRes := db.Raw(appQuery, hostName).Scan(&appDetails)
-
-	if appRes.Error != nil {
-		return ownerCheckData, errors.New("resource access forbidden")
-	}
-	if appRes.RowsAffected < 1 {
-		return ownerCheckData, errors.New("resource access forbidden")
-	}
 
 	ownerCheckQuery := `select exists(select mr.role_id from member_roles mr 
 		inner join roles r on mr.role_id=r.id 
@@ -83,12 +62,11 @@ func Handler(shieldUser string, req *http.Request, writer http.ResponseWriter, d
 	inner join act_gp_actions actgrpbr on actgrpbr.ac_act_grp_id=acgrp.id
 	
 	-- joining with actions and resources
-	inner join ac_resources acr on (acr.id=resgrpbr.ac_resource_id and acr.function_name=@FunctionName and acr.owner_app_id=@OwnerAppID) 
-	inner join ac_actions act on (act.id=actgrpbr.ac_action_id and act.name=@ActionName and act.owner_app_id=@OwnerAppID))`
+	inner join ac_resources acr on (acr.id=resgrpbr.ac_resource_id and acr.function_name=@FunctionName) 
+	inner join ac_actions act on (act.id=actgrpbr.ac_action_id and act.name=@ActionName ))`
 
 		valuesMap := make(map[string]interface{})
 
-		valuesMap["OwnerAppID"] = appDetails.AppID
 		valuesMap["ActionName"] = actionName
 		valuesMap["FunctionName"] = functionName
 		valuesMap["UserID"] = shieldUser

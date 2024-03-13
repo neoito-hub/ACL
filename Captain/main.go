@@ -26,23 +26,19 @@ func LoadResources() {
 		IsAuthorised    int    `json:"is_authorised"`
 		IsAuthenticated int    `json:"is_authenticated"`
 		Path            string `json:"path"`
+		FunctionName    string `json:"function_name"`
 	}
 
-	var ownerAppArray []string
 	var resourcesData []Data
 
-	for _, v := range strings.Split(os.Getenv("OWNER_APP_NAMES"), ",") {
-		ownerAppArray = append(ownerAppArray, v)
-	}
-
-	res := db.Raw("select entity_name,is_authorised,is_authenticated,path from ac_resources ac inner join shield_apps a on a.app_id=ac.owner_app_id where  a.app_name in (?)", ownerAppArray).Scan(&resourcesData)
+	res := db.Raw("select entity_name,is_authorised,is_authenticated,path,function_name from ac_resources ac ").Scan(&resourcesData)
 
 	if res.Error != nil {
 		log.Fatal("Could not load resources from db")
 	}
 
 	for _, v := range resourcesData {
-		resourcesMap[v.Path] = common_services.Resources{EntiyName: v.EntiyName, IsAuthorised: v.IsAuthorised, IsAuthenticated: v.IsAuthenticated}
+		resourcesMap[v.FunctionName] = common_services.Resources{EntiyName: v.EntiyName, IsAuthorised: v.IsAuthorised, IsAuthenticated: v.IsAuthenticated}
 
 	}
 
@@ -84,11 +80,36 @@ func SpacesHandler(c *gin.Context) {
 	w := c.Writer
 	r := c.Request
 
-	mdlwrErr, shieldUser := gateway.Call(w, r, db, resourcesMap)
+	urlFragments := strings.Split(r.URL.Path, "/")
+
+	actionName := urlFragments[len(urlFragments)-1]
+	functionName := urlFragments[len(urlFragments)-2]
+
+	spaceID := r.Header.Get("space_id")
+
+	mdlwrErr, shieldUser := gateway.Call(w, r, db, resourcesMap, actionName, functionName, spaceID)
 	if mdlwrErr != nil {
 		return
 	}
 	spaces.InvokeGRPC(w, r, shieldUser, spaces.RouteData{Url: r.URL.Path, Host: r.Host})
+
+}
+
+func AuthHandler(c *gin.Context) {
+
+	w := c.Writer
+	r := c.Request
+
+	actionName := r.URL.Query().Get("action-name")
+	resourceName := r.URL.Query().Get("resource-name")
+	spaceID := r.URL.Query().Get("space-id")
+
+	mdlwrErr, shieldUser := gateway.Call(w, r, db, resourcesMap, actionName, resourceName, spaceID)
+	if mdlwrErr != nil {
+		return
+	}
+
+	common_services.RespondWithJSON(w, http.StatusOK, shieldUser)
 
 }
 
@@ -118,6 +139,8 @@ func main() {
 	r.GET("/api/spaces/*action", SpacesHandler)
 	r.PUT("/api/spaces/*action", SpacesHandler)
 	r.DELETE("/api/spaces/*action", SpacesHandler)
+
+	r.GET("/api/auth/getUser", AuthHandler)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},

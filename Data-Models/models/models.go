@@ -267,7 +267,7 @@ type AcResource struct {
 	Name            string
 	Description     string
 	Path            string
-	FunctionName    string
+	FunctionName    string `gorm:"unique"`
 	EntityName      string
 	FunctionMethod  string
 	Version         string
@@ -275,7 +275,6 @@ type AcResource struct {
 	OwnerAppID      string
 	IsAuthorised    int
 	IsAuthenticated int
-	OwnerApp        ShieldApp `gorm:"foreignKey:OwnerAppID;References:AppId"`
 }
 
 type AcResGrp struct {
@@ -294,8 +293,8 @@ type AcResGrp struct {
 type AcResGpRes struct {
 	gorm.Model
 	ID           string `gorm:"primaryKey;not null"`
-	AcResGrpID   string
-	AcResourceID string // FK to MEMBER table
+	AcResGrpID   string `gorm:"index:resgp_unique_index,unique"`
+	AcResourceID string `gorm:"index:resgp_unique_index,unique"`
 	OptCounter   int    `gorm:"size:8"`
 
 	AcResource AcResource `gorm:"foreignKey:AcResourceID;references:ID"`
@@ -316,11 +315,9 @@ type AcResAction struct {
 type AcAction struct {
 	gorm.Model
 	ID          string `gorm:"primaryKey;not null"`
-	Name        string
+	Name        string `gorm:"unique"`
 	Description string
 	OptCounter  int `gorm:"size:8"`
-	OwnerAppID  string
-	OwnerApp    ShieldApp `gorm:"foreignKey:OwnerAppID;References:AppId"`
 }
 
 type AcActGrp struct {
@@ -339,9 +336,9 @@ type AcActGrp struct {
 type ActGpAction struct {
 	gorm.Model
 	ID         string `gorm:"primaryKey"`
-	AcActGrpID string
-	AcActionID string
-	OptCounter int `gorm:"size:8"`
+	AcActGrpID string `gorm:"index:act_gp_unique_index,unique"`
+	AcActionID string `gorm:"index:act_gp_unique_index,unique"`
+	OptCounter int    `gorm:"size:8"`
 
 	AcAction AcAction `gorm:"foreignKey:AcActionID;References:ID"`
 	AcActGrp AcActGrp `gorm:"foreignKey:AcActGrpID;References:ID"`
