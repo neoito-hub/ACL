@@ -13,5 +13,7 @@
     "1.0.0"
   ],
   "repoType": "mono",
-  "language": "golang"
+  "language": "golang",
+  "dependencies": {},
+  "version": "0.0.2"
 }
