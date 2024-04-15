@@ -53,6 +53,7 @@ require (
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.20.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
+	github.com/thedatashed/xlsxreader v1.2.5 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect

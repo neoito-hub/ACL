@@ -39,71 +39,86 @@ services:
       timeout: 3s
       retries: 5
 
-  shield-go-app:
-    build: ./Shield
-    container_name: go_shield_app_container
-    volumes:
-      - ./Data-Models:/app/Data-Models
-    ports:
-      - '8080:8080'
-      - '8010:8010'
-      - '8011:8011'
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      data-models-go-app:
-        condition: service_completed_successfully
-    command: bash -c "go mod download && go build -o main . && go run main.go packages.go"
-  captain-go-app:
-    build: ./Captain
-    container_name: go_captain_app_container
-    ports:
-      - '6001:6001'
-      - '6010:6010'
-      - '6011:6011'
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      shield-go-app:
-        condition: service_started
-      spaces-go-app:
-        condition: service_started
-      data-models-go-app:
-        condition: service_completed_successfully
-    command: bash -c "go run main.go"
-  spaces-go-app:
-    build: ./Spaces
-    container_name: go_spaces_app_container
-    volumes:
-      - ./Data-Models:/app/Data-Models
-    ports:
-      - '5001:5001'
-      - '5010:5010'
-      - '5011:5011'
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      data-models-go-app:
-        condition: service_completed_successfully
-    command: bash -c "go mod download && go build -o main . && go run main.go packages.go"
-  data-models-go-app:
-    build: ./Data-Models
-    container_name: go_data_models_app_container
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: bash -c "go run ./migrator/main.go "
+  # shield-go-app:
+  #   build: ./Shield
+  #   container_name: go_shield_app_container
+  #   volumes:
+  #     - ./Data-Models:/app/Data-Models
+  #   ports:
+  #     - '8080:8080'
+  #     - '8010:8010'
+  #     - '8011:8011'
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     data-models-go-app:
+  #       condition: service_completed_successfully
+  #   command: bash -c "go mod download && go build -o main . && go run main.go packages.go"
+  # captain-go-app:
+  #   build: ./Captain
+  #   container_name: go_captain_app_container
+  #   ports:
+  #     - '6001:6001'
+  #     - '6010:6010'
+  #     - '6011:6011'
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     shield-go-app:
+  #       condition: service_started
+  #     spaces-go-app:
+  #       condition: service_started
+  #     data-models-go-app:
+  #       condition: service_completed_successfully
+  #   command: bash -c "go run main.go"
+  # spaces-go-app:
+  #   build: ./Spaces
+  #   container_name: go_spaces_app_container
+  #   volumes:
+  #     - ./Data-Models:/app/Data-Models
+  #   ports:
+  #     - '5001:5001'
+  #     - '5010:5010'
+  #     - '5011:5011'
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     data-models-go-app:
+  #       condition: service_completed_successfully
+  #   command: bash -c "go mod download && go build -o main . && go run main.go packages.go"
+  # data-models-go-app:
+  #   build: ./Data-Models
+  #   container_name: go_data_models_app_container
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   command: bash -c "go run ./migrator/main.go "
 
   acl-fe-app:
     build: ./fe_container
     container_name: acl_fe_app_container
     ports:
       - '3011:80'
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: jishnu@appblocks.com
+      PGADMIN_DEFAULT_PASSWORD: 1234
+    volumes:
+      - ./pgadmin-data:/home/apps/favs/neoito/appblock/experiments/ACL/Shield/pgadmin
+
+volumes:
+  pg-data:
+  pgadmin-data:
