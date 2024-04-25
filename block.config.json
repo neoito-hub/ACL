@@ -1,6 +1,6 @@
 {
   "name": "ACL",
-  "type": "raw-package",
+  "type": "containerized",
   "blockId": "hpYBxxL_JGtWLOlbV0ThV",
   "source": {
     "https": "https://github.com/neoito-hub/ACL.git",
